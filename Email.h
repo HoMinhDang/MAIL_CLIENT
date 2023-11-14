@@ -30,13 +30,24 @@ public:
 
     // attach file
     void attachFile(const std::string& file_path);
+    // getter 
+    std::string getSender() const;
+    std::string getRecipient() const;
+
+    std::string getBoundary() const;
+    std::string getCC() const;
+    std::string getBCC() const;
+
+    std::string getFilename(const std::string& file_path) const;
+    std::string getFileExtension(const std::string& file_name) const;
+    std::string getContentType(const std::string& file_extension) const;
+    
 
     // return format of mail
     std::string formatMail() const;
 
-    // getter 
-    std::string getSender() const;
-    std::string getRecipient() const;
+
+
 
 };
     
