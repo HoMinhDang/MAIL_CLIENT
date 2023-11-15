@@ -1,6 +1,7 @@
 #include "Email.h"
 #include <map>
 
+const int FILE_SIZE_MAX = 3 * 1024 * 1024;
 
 void Email::addCc(const std::string& recipient)
 {
@@ -14,7 +15,27 @@ void Email::addBcc(const std::string& recipient)
 
 void Email::attachFile(const std::string& file_path)
 {
-    attachment_list.push_back(file_path);
+    // Check if file is larger than 3MB
+    std::ifstream file(file_path, std::ios::binary);
+    if (file.is_open())
+    {
+        file.seekg(0, std::ios::end);
+        std::streampos file_size = file.tellg();
+        if (file_size > FILE_SIZE_MAX)
+        {
+            std::cerr << "File :" << file_path << " is larger than 3MB" << std::endl;
+        }
+        else
+        {
+            attachment_list.push_back(file_path);
+        }
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Error opening file: " << file_path << std::endl;
+    }
+    
 }
 
 
