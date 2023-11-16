@@ -24,24 +24,29 @@ public:
     Email(const std::string& SENDER, const std::string& TO, const std::string& SUBJECT, const std::string& MSG)
         : email_sender(SENDER), email_recipient(TO), subject(SUBJECT), message(MSG) {}
     
-    // add cc, bcc
+    // add cc, bcc, file_path
     void addCc(const std::string& recipient);
     void addBcc(const std::string& recipient);
-
-    // attach file
     void attachFile(const std::string& file_path);
     // getter 
     std::string getSender() const;
     std::string getRecipient() const;
-
-    std::string getBoundary() const;
     std::string getCC() const;
+    std::vector<std::string> getListCC() const;
     std::string getBCC() const;
+    std::vector<std::string> getListBCC() const;
+    std::string getBoundary() const;
+    std::string getDomain() const;
 
     std::string getFilename(const std::string& file_path) const;
     std::string getFileExtension(const std::string& file_name) const;
     std::string getContentType(const std::string& file_extension) const;
     
+    std::string genUniqueString(int size_string) const;
+    std::string genDate() const;
+    std::string genUserAgent() const;
+    std::string genMessageID() const;
+    std::string genBoundary() const;
 
     // return format of mail
     std::string formatMail() const;

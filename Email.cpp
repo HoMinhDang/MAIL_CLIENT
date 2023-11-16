@@ -64,6 +64,11 @@ std::string Email::getCC() const
     return res;    
 }
 
+std::vector<std::string> Email::getListCC() const 
+{
+    return cc_list;
+}
+
 std::string Email::getBCC() const
 {
     std::string res = "";
@@ -74,6 +79,11 @@ std::string Email::getBCC() const
         return res.substr(0, res.size() - 2);    
     }
     return res; 
+}
+
+std::vector<std::string> Email::getListBCC() const 
+{
+    return bcc_list;
 }
 
 std::string Email::getFilename(const std::string& file_path) const
@@ -184,41 +194,33 @@ std::string Email::formatMail() const {
     // Check if there are attachments
     bool hasAttachments = !attachment_list.empty();
 
-    if (hasAttachments) {
+    if (hasAttachments)
         email_format << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n";
-        email_format << "Message-ID: " << genMessageID() << "\r\n";
-        email_format << "Date: " << genDate() << "\r\n";
-        email_format << "MIME-Version: 1.0\r\n";
-        email_format << "User-Agent: " << genUserAgent() << "\r\n";
-        email_format << "Content-Language: en-US\r\n";
 
-        email_format << "From: " << email_sender << "\r\n";
-        email_format << "To: " << email_recipient << "\r\n";
-        email_format << "CC: " << getCC() << "\r\n";
-        email_format << "BCC: " << getBCC() << "\r\n";
-        email_format << "Subject: " << subject << "\r\n\r\n";
-    } else {
-        email_format << "Message-ID: " << genMessageID() << "\r\n";
-        email_format << "Date: " << genDate() << "\r\n";
-        email_format << "MIME-Version: 1.0\r\n";
-        email_format << "User-Agent: " << genUserAgent() << "\r\n";
-        email_format << "Content-Language: en-US\r\n";
-        
-        email_format << "From: " << email_sender << "\r\n";
-        email_format << "To: " << email_recipient << "\r\n";
-        email_format << "CC: " << getCC() << "\r\n";
-        email_format << "BCC: " << getBCC() << "\r\n";
-        email_format << "Subject: " << subject << "\r\n";
-    }
+    email_format << "Message-ID: " << genMessageID() << "\r\n";
+    email_format << "Date: " << genDate() << "\r\n";
+    email_format << "MIME-Version: 1.0\r\n";
+    email_format << "User-Agent: " << genUserAgent() << "\r\n";
+    email_format << "Content-Language: en-US\r\n";
 
-    if (hasAttachments) {
+    email_format << "From: " << email_sender << "\r\n";
+    email_format << "To: " << email_recipient << "\r\n";
+    email_format << "CC: " << getCC() << "\r\n";
+    email_format << "BCC: " << getBCC() << "\r\n";
+    email_format << "Subject: " << subject << "\r\n\r\n";
+
+
+    if (hasAttachments) 
+    {
         // Boundary for text/plain part
         email_format << "--" << boundary << "\r\n";
         email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
         email_format << message << "\r\n\r\n";
-    } else {
+    } 
+    else 
+    {
         // Single-part body
-        email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
+        // email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
         email_format << message << "\r\n";
     }
 
