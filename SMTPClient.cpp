@@ -21,6 +21,21 @@ void SMTPClient::sendEmail(const Email& email)
     sendCommand("RCPT TO: <" + email.getRecipient() + ">\r\n");
     receiveResponse();
 
+    std::vector<std::string> cc_list = email.getListCC();
+    std::vector<std::string> bcc_list = email.getListBCC();
+    // CC BCC
+    for (const auto& recipient : cc_list)
+    {
+        sendCommand("RCPT TO: <" + recipient + ">\r\n");
+        receiveResponse();
+    }
+    for (const auto& recipient : bcc_list)
+    {
+        sendCommand("RCPT TO: <" + recipient + ">\r\n");
+        receiveResponse();
+    }
+
+
     // Start email data
     sendCommand("DATA\r\n");
     receiveResponse();
@@ -30,12 +45,10 @@ void SMTPClient::sendEmail(const Email& email)
     std::string emailContent = email.formatMail();
     const int chunk_size = 1024; // Choose an appropriate chunk size
     for (size_t i = 0; i < emailContent.length(); i += chunk_size) {
-        sendCommand(emailContent.substr(i, chunk_size) + "\r\n");
-        
+        sendCommand(emailContent.substr(i, chunk_size) + "\r\n"); 
     }
-
     
-    sendCommand("\r\n.\r\n");
+    sendCommand(".\r\n");
 
     // Quit session
     sendCommand("QUIT\r\n");
