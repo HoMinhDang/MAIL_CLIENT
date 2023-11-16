@@ -28,6 +28,7 @@ public:
     void addCc(const std::string& recipient);
     void addBcc(const std::string& recipient);
     void attachFile(const std::string& file_path);
+
     // getter 
     std::string getSender() const;
     std::string getRecipient() const;
@@ -35,16 +36,17 @@ public:
     std::vector<std::string> getListCC() const;
     std::string getBCC() const;
     std::vector<std::string> getListBCC() const;
-    std::string getBoundary() const;
-    std::string getDomain() const;
 
+    // Handle file_path
     std::string getFilename(const std::string& file_path) const;
     std::string getFileExtension(const std::string& file_name) const;
     std::string getContentType(const std::string& file_extension) const;
     
-    std::string genUniqueString(int size_string) const;
+    // Handle mail format 
+    std::string getDomain() const;
     std::string genDate() const;
     std::string genUserAgent() const;
+    std::string genUniqueString(int size_string) const;
     std::string genMessageID() const;
     std::string genBoundary() const;
 

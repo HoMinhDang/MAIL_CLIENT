@@ -6,6 +6,7 @@
 
 const int FILE_SIZE_MAX = 3 * 1024 * 1024;
 
+
 void Email::addCc(const std::string& recipient)
 {
     cc_list.push_back(recipient);
@@ -41,7 +42,7 @@ void Email::attachFile(const std::string& file_path)
     
 }
 
-
+//Getter
 std::string Email::getSender() const
 {
     return email_sender;
@@ -86,6 +87,8 @@ std::vector<std::string> Email::getListBCC() const
     return bcc_list;
 }
 
+
+// Handle file_path
 std::string Email::getFilename(const std::string& file_path) const
 {
     return file_path.substr(file_path.find_last_of("/\\") + 1);
@@ -128,6 +131,8 @@ std::string Email::getContentType(const std::string& file_extension) const
     }
 }
 
+
+// Handle mail format
 std::string Email::getDomain() const
 {
     size_t atPos = email_sender.find("@");
@@ -206,7 +211,7 @@ std::string Email::formatMail() const {
     email_format << "From: " << email_sender << "\r\n";
     email_format << "To: " << email_recipient << "\r\n";
     email_format << "CC: " << getCC() << "\r\n";
-    email_format << "BCC: " << getBCC() << "\r\n";
+    // email_format << "BCC: " << getBCC() << "\r\n";
     email_format << "Subject: " << subject << "\r\n\r\n";
 
 
