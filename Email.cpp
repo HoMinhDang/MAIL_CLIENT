@@ -1,5 +1,8 @@
 #include "Email.h"
+
 #include <map>
+#include <ctime>
+#include <iomanip>
 
 const int FILE_SIZE_MAX = 3 * 1024 * 1024;
 
@@ -115,29 +118,92 @@ std::string Email::getContentType(const std::string& file_extension) const
     }
 }
 
-std::string Email::getBoundary() const
+std::string Email::getDomain() const
 {
-    if (!attachment_list.empty())
-        return "--boundary_delimiter\r\n";
+    size_t atPos = email_sender.find("@");
+    if (atPos != std::string::npos)
+    {
+        return email_sender.substr(atPos + 1);
+    }
     return "";
 }
 
+
+std::string Email::genUniqueString(int size_string) const
+{
+    const std::string charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    int size_charset = charset.size();
+
+    std::ostringstream res;
+    for (int i = 0; i < size_string; i++)
+        res << charset[rand() % size_charset];
+    return res.str();
+}
+
+std::string Email::genDate() const
+{
+    auto current_time = std::time(nullptr);
+    current_time += (7 * 3600); // convert to GMT+7
+
+    std::tm* GMT7_tm = std::gmtime(&current_time);
+
+    char buffer[100];
+    std::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S +0700", GMT7_tm);
+
+    return buffer;
+
+}
+
+std::string Email::genUserAgent() const
+{
+    return "NO NAME";
+}
+
+std::string Email::genMessageID() const 
+{
+    std::ostringstream ID;
+    ID << "<" << genUniqueString(20) << "@" << getDomain()  << ">";
+    return ID.str();
+}
+
+std::string Email::genBoundary() const
+{
+    std::ostringstream boundary;
+    for (int i = 0; i < 10; i++)
+        boundary << "-";
+    boundary << genUniqueString(20);
+    return boundary.str();
+}
+
+
 std::string Email::formatMail() const {
     std::ostringstream email_format;
+
+    std::string boundary = genBoundary();
 
     // Check if there are attachments
     bool hasAttachments = !attachment_list.empty();
 
     if (hasAttachments) {
-        email_format << "Content-Type: multipart/mixed; boundary=boundary_delimiter\r\n";
+        email_format << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n";
+        email_format << "Message-ID: " << genMessageID() << "\r\n";
+        email_format << "Date: " << genDate() << "\r\n";
         email_format << "MIME-Version: 1.0\r\n";
+        email_format << "User-Agent: " << genUserAgent() << "\r\n";
+        email_format << "Content-Language: en-US\r\n";
+
         email_format << "From: " << email_sender << "\r\n";
         email_format << "To: " << email_recipient << "\r\n";
         email_format << "CC: " << getCC() << "\r\n";
         email_format << "BCC: " << getBCC() << "\r\n";
         email_format << "Subject: " << subject << "\r\n\r\n";
     } else {
+        email_format << "Message-ID: " << genMessageID() << "\r\n";
+        email_format << "Date: " << genDate() << "\r\n";
         email_format << "MIME-Version: 1.0\r\n";
+        email_format << "User-Agent: " << genUserAgent() << "\r\n";
+        email_format << "Content-Language: en-US\r\n";
+        
         email_format << "From: " << email_sender << "\r\n";
         email_format << "To: " << email_recipient << "\r\n";
         email_format << "CC: " << getCC() << "\r\n";
@@ -147,7 +213,7 @@ std::string Email::formatMail() const {
 
     if (hasAttachments) {
         // Boundary for text/plain part
-        email_format << "--boundary_delimiter\r\n";
+        email_format << "--" << boundary << "\r\n";
         email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
         email_format << message << "\r\n\r\n";
     } else {
@@ -162,7 +228,7 @@ std::string Email::formatMail() const {
 
         std::string file_name = getFilename(file_path);
 
-        email_format << "--boundary_delimiter\r\n";
+        email_format << "--" << boundary << "\r\n";
 
         // Determine content type based on file extension
         std::string file_extension = getFileExtension(file_name);
@@ -192,7 +258,7 @@ std::string Email::formatMail() const {
 
     // End of email
     if (hasAttachments) {
-        email_format << "--boundary_delimiter--\r\n";
+        email_format << "--" << boundary << "--" << "\r\n";
     }
 
     return email_format.str();
