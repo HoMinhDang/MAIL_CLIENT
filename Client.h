@@ -2,6 +2,7 @@
 #include <string>
 #include <winsock2.h>
 #include "base64.h"
+#include "WinsockManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -15,18 +16,18 @@ protected:
     int port;
     SOCKET client_socket;
 
-    // send command
+    // send command to server
     void sendCommand(const std::string& command) const;
 
-    // receive response
+    // receive response from server
     std::string receiveResponse() const;
 
-    // display response
+    // display response from server - use for debug
     void displayResponse(const std::string& response) const;
 
 public:
-    Client(const std::string& server_address, int server_port)
-        : address(server_address), port(server_port){}
+
+    Client(const std::string& server_address, int server_port);
     virtual ~Client();
 
     // connect to server

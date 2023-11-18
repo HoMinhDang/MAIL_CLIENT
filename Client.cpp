@@ -1,11 +1,14 @@
 #include "Client.h"
 
+Client::Client(const std::string& server_address, int server_port)
+    : address(server_address), port(server_port), client_socket(INVALID_SOCKET) {
+}
+
 Client::~Client()
 {
     if (client_socket != INVALID_SOCKET)
     {
         closesocket(client_socket);
-        WSACleanup();
     }
 }
 
@@ -37,18 +40,9 @@ void Client::displayResponse(const std::string& response) const
     std::cout << "Server response: " << response << std::endl;
 }
 
-
 bool Client::connectToServer() 
 {
-    // Create Windows sockets API
-    WSADATA wsa_data;   
-    WORD w_version_requested = MAKEWORD(2, 2); // version 2.2 of Winsock
-    // WSAStarup return 0 on success 
-    if (WSAStartup(w_version_requested, &wsa_data) != 0)
-    {
-        std::cerr << "Failed to initialize Winsock." << std::endl;
-        return false;
-    }
+    WinsockManager& wsaManager = WinsockManager::getInstance();
 
     // Create socket
         // socket(domain, type, protocol)
