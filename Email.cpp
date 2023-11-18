@@ -75,7 +75,7 @@ std::string Email::getBCC() const
     std::string res = "";
     if (!bcc_list.empty())
     {
-        for (const auto& recipient : cc_list)
+        for (const auto& recipient : bcc_list)
             res += recipient + ", ";
         return res.substr(0, res.size() - 2);    
     }
