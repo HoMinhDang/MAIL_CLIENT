@@ -1,4 +1,3 @@
-// WinsockManager.h
 #ifndef WINSOCK_MANAGER_H
 #define WINSOCK_MANAGER_H
 
