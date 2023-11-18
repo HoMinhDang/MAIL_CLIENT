@@ -15,6 +15,8 @@ private:
     std::string email_recipient;
     std::string subject;
     std::string message;
+    std::string boundary;
+    std::string message_ID;
     std::vector<std::string> cc_list;
     std::vector<std::string> bcc_list;
     std::vector<std::string> attachment_list;
