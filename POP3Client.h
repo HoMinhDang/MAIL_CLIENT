@@ -19,9 +19,9 @@ public:
     ~POP3Client(){}
 
     bool login(const std::string& username, const std::string& password);
+    
+    int getCountEmail() const;
 
 };
-
-
 
 #endif // POP3_CLIENT_H

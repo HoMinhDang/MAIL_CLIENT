@@ -31,3 +31,16 @@ bool POP3Client::login(const std::string& username, const std::string& password)
     return true;
 }
 
+int POP3Client::getCountEmail() const
+{
+    // assume that is being connect to server 
+    sendCommand("STAT\r\n"); 
+
+    std::string stat_response = receiveResponse();
+    std::istringstream iss(stat_response);
+    std::string status;
+    int count_emails = 0;
+    iss >> status >> count_emails;
+    return count_emails;
+}
+
