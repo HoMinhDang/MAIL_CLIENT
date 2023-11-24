@@ -140,8 +140,11 @@ void POP3Client::retrieveAllEmail()
 
 void POP3Client::loadDownloadedEmail(const std::string& username)
 {
+    std::string database_folder = "database";
     std::string filename = "downloaded_email_UID.txt";
-    std::ifstream file(username + "/" + filename);
+    std::string file_path = database_folder + "/" + username + "/" + filename;
+
+    std::ifstream file(file_path);
     if (file.is_open()) {
         std::string email;
         while (std::getline(file, email)) {
@@ -149,25 +152,33 @@ void POP3Client::loadDownloadedEmail(const std::string& username)
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file: " << username + "/" + filename << std::endl;
+        std::cerr << "Unable to open file: " << file_path << std::endl;
     }
 }
 
 void POP3Client::saveDownloadEmail(const std::string& username)
 {
+    std::string database_folder = "database";
     std::string filename = "downloaded_email_UID.txt";
+    std::string user_folder = database_folder + "/" + username;
+    std::string file_path = user_folder + "/" + filename;
+
     // Create the folder if it doesn't exist
-    if (!std::filesystem::exists(username)) {
-        std::filesystem::create_directory(username);
+    if (!std::filesystem::exists(database_folder)) {
+        std::filesystem::create_directory(database_folder);
     }
 
-    std::ofstream file(username + "/" + filename);
+    if (!std::filesystem::exists(user_folder)) {
+        std::filesystem::create_directory(user_folder);
+    }
+
+    std::ofstream file(file_path);
     if (file.is_open()) {
         for (const auto& email : downloaded_email) {
             file << email << "\n";
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file: " << username + "/" + filename << std::endl;
+        std::cerr << "Unable to open file: " << file_path << std::endl;
     }
 }
