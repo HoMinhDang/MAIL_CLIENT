@@ -5,19 +5,20 @@
 
 namespace fs = std::filesystem;
 
-void saveEmail(const std::string& database_path, const std::string& username, const std::string& filename, const std::string& email_content)
+namespace fs = std::filesystem;
+
+void saveEmail(const std::string& username, const std::string& email_content, const std::string& filename)
 {
-    std::string file_path = database_path + "/" + username + "/" + filename;;
-    // create folder
-    if (!fs::exists(database_path + "/" + username))
+    std::string file_path = username + "/" + filename;
+
+    if (!fs::exists(username))
     {
-        fs::create_directory(database_path + "/" + username);
-        
+        fs::create_directory(username);
+
         // use for debug
-        std::cout << "User folder created: " << username << "\n";
+        // std::cout << "User folder created: " << username << "\n";
     }
 
-    // save email
     std::ofstream file(file_path);
 
     if (file.is_open())
@@ -25,10 +26,15 @@ void saveEmail(const std::string& database_path, const std::string& username, co
         file << email_content;
         file.close();
 
-        std::cout << "Email saved in folder: " << file_path << "\n   ";
+        // debug
+        // std::cout << "Email saved in folder: " << file_path << "\n";
     }
     else
     {
-        std::cerr << "Error saving email in folder: " << file_path << "\n";
+        // debug
+        // std::cerr << "Error saving email in folder: " << file_path << "\n";
     }
 }
+
+
+
