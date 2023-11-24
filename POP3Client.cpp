@@ -1,5 +1,36 @@
 #include "POP3Client.h"
 
+std::string POP3Client::receiveResponsePOP3() const
+{
+    char buffer[1024];
+    std::string response;
+
+    while (true)
+    {
+        int bytes = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+        if (bytes > 0)
+        {
+            buffer[bytes] = '\0';
+            response += buffer;
+
+            size_t pos = response.find("\r\n.\r\n");
+            if (pos != std::string::npos)
+            {
+                response.resize(pos + 5);
+                break;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    displayResponse(response);
+
+    return response;
+}
+
 
 bool POP3Client::login(const std::string& username, const std::string& password)
 {
@@ -31,16 +62,112 @@ bool POP3Client::login(const std::string& username, const std::string& password)
     return true;
 }
 
-int POP3Client::getCountEmail() const
+void POP3Client::getCountEmail() 
 {
-    // assume that is being connect to server 
+    // assume that it is being connected to the server 
     sendCommand("STAT\r\n"); 
 
     std::string stat_response = receiveResponse();
     std::istringstream iss(stat_response);
     std::string status;
-    int count_emails = 0;
-    iss >> status >> count_emails;
-    return count_emails;
+    int count_email = 0;
+    iss >> status >> count_email;
+    this->count_email = count_email;
 }
 
+void POP3Client::getListUID()
+{
+    // assume that it is being connected to the server 
+    sendCommand("UIDL\r\n");
+
+    std::string uidl_response = receiveResponsePOP3();
+
+    std::istringstream iss(uidl_response);
+    std::string status;
+    
+
+    list_uid.clear();
+    list_uid.push_back(""); // "" for [0]
+
+    iss >> status;
+    if (status == "+OK")
+    for (int i = 0; i < count_email; ++i)
+    {
+        int email_number;
+        std::string email_UID;
+        iss >> email_number >> email_UID;
+        list_uid.push_back(email_UID);
+    }
+}
+
+std::string POP3Client::retrieveEmail(int email_number)
+{
+    // assume that it is being connected to the server 
+    
+    // check if this email had downloaded 
+    std::string email_uid = list_uid[email_number];
+    if (downloaded_email.find(email_uid) != downloaded_email.end())
+    {
+        //debug
+        std::cout << "Email with UID " << email_uid << " has already been downloaded.\n";
+        return "";
+    }
+
+
+    sendCommand("RETR " + std::to_string(email_number) + "\r\n");
+
+    std::string email_content = receiveResponsePOP3();
+
+    downloaded_email.insert(email_uid);
+
+    // debug
+    std::cout << "Email content for email number " << email_number << ":\n" << email_content;
+
+    return email_content;
+}
+
+void POP3Client::retrieveAllEmail()
+{
+    getCountEmail();
+    getListUID();
+    for(int i = 1; i <= count_email; i++)
+    {
+        std::string email_content = retrieveEmail(i);
+        if (email_content != "")
+            list_email.push_back(email_content);
+    }
+}
+
+void POP3Client::loadDownloadedEmail(const std::string& username)
+{
+    std::string filename = "downloaded_email_UID.txt";
+    std::ifstream file(username + "/" + filename);
+    if (file.is_open()) {
+        std::string email;
+        while (std::getline(file, email)) {
+            downloaded_email.insert(email);
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file: " << username + "/" + filename << std::endl;
+    }
+}
+
+void POP3Client::saveDownloadEmail(const std::string& username)
+{
+    std::string filename = "downloaded_email_UID.txt";
+    // Create the folder if it doesn't exist
+    if (!std::filesystem::exists(username)) {
+        std::filesystem::create_directory(username);
+    }
+
+    std::ofstream file(username + "/" + filename);
+    if (file.is_open()) {
+        for (const auto& email : downloaded_email) {
+            file << email << "\n";
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file: " << username + "/" + filename << std::endl;
+    }
+}
