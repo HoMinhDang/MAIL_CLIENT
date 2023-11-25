@@ -17,27 +17,12 @@ private:
     std::string message;
     std::string boundary;
     std::string message_ID;
+    std::string date;
     std::vector<std::string> cc_list;
     std::vector<std::string> bcc_list;
     std::vector<std::string> attachment_list;
-
-public:
-    // constructor
-    Email(const std::string& SENDER, const std::string& TO, const std::string& SUBJECT, const std::string& MSG)
-        : email_sender(SENDER), email_recipient(TO), subject(SUBJECT), message(MSG) {}
     
-    // add cc, bcc, file_path
-    void addCc(const std::string& recipient);
-    void addBcc(const std::string& recipient);
-    void attachFile(const std::string& file_path);
 
-    // getter 
-    std::string getSender() const;
-    std::string getRecipient() const;
-    std::string getCC() const;
-    std::vector<std::string> getListCC() const;
-    std::string getBCC() const;
-    std::vector<std::string> getListBCC() const;
 
     // Handle file_path
     std::string getFilename(const std::string& file_path) const;
@@ -52,12 +37,32 @@ public:
     std::string genMessageID() const;
     std::string genBoundary() const;
 
+public:
+    
+    Email() : email_sender(""), email_recipient(""), subject(""), message("") {}
+    // constructor
+    Email(const std::string& SENDER, const std::string& TO, const std::string& SUBJECT, const std::string& MSG)
+        : email_sender(SENDER), email_recipient(TO), subject(SUBJECT), message(MSG) {}
+
+    // add cc, bcc, file_path
+    void addCc(const std::string& recipient);
+    void addBcc(const std::string& recipient);
+    void attachFile(const std::string& file_path);
+
+    // getter 
+    std::string getSender() const;
+    std::string getRecipient() const;
+    std::string getCC() const;
+    std::vector<std::string> getListCC() const;
+    std::string getBCC() const;
+    std::vector<std::string> getListBCC() const;
+    std::string getSubject() const;
+    std::string getMessage() const;
+
     // return format of mail
     std::string formatMail() const;
 
-
-
-
+    void loadEmail(const std::string& email_content);
 };
     
 #endif // EMAIL

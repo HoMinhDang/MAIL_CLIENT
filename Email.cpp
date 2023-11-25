@@ -6,6 +6,10 @@
 
 const int FILE_SIZE_MAX = 3 * 1024 * 1024;
 
+void DEBUG(std::string line)
+{
+    std::cout << "\nDEBUG: " << line.size() << " " << line;
+}
 
 void Email::addCc(const std::string& recipient)
 {
@@ -85,6 +89,16 @@ std::string Email::getBCC() const
 std::vector<std::string> Email::getListBCC() const 
 {
     return bcc_list;
+}
+
+std::string Email::getSubject() const
+{
+    return subject;
+}
+
+std::string Email::getMessage() const
+{
+    return message;
 }
 
 
@@ -184,9 +198,9 @@ std::string Email::genMessageID() const
 std::string Email::genBoundary() const
 {
     std::ostringstream boundary;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 12; i++)
         boundary << "-";
-    boundary << genUniqueString(20);
+    boundary << genUniqueString(24);
     return boundary.str();
 }
 
@@ -199,37 +213,43 @@ std::string Email::formatMail() const {
     // Check if there are attachments
     bool hasAttachments = !attachment_list.empty();
 
+    // Set the Content-Type header for multipart messages
     if (hasAttachments)
-        email_format << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n";
+        email_format << "Content-Type: multipart/mixed; boundary="" << boundary << ""\r\n";
 
+    // Common email headers
     email_format << "Message-ID: " << genMessageID() << "\r\n";
     email_format << "Date: " << genDate() << "\r\n";
     email_format << "MIME-Version: 1.0\r\n";
     email_format << "User-Agent: " << genUserAgent() << "\r\n";
     email_format << "Content-Language: en-US\r\n";
 
+    // Sender and recipient information
     email_format << "From: " << email_sender << "\r\n";
     email_format << "To: " << email_recipient << "\r\n";
     email_format << "CC: " << getCC() << "\r\n";
+    // Uncomment the line below if BCC is needed
     // email_format << "BCC: " << getBCC() << "\r\n";
-    email_format << "Subject: " << subject << "\r\n\r\n";
+    if (hasAttachments)
+        email_format << "Subject: " << subject << "\r\n\r\n";
+    else
+        email_format << "Subject: " << subject << "\r\n";
 
-
-    if (hasAttachments) 
-    {
-        // Boundary for text/plain part
+    // Main message content
+    if (hasAttachments) {
+        // Boundary for the text/plain part
         email_format << "--" << boundary << "\r\n";
-        email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
+        email_format << "Content-Type: text/plain; charset=utf-8; format=flowed\r\n";
+        email_format << "Content-Transfer-Encoding: 7bit\r\n\r\n";
         email_format << message << "\r\n\r\n";
-    } 
-    else 
-    {
+    } else {
         // Single-part body
-        // email_format << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
+        email_format << "Content-Type: text/plain; charset=utf-8; format=flowed\r\n";
+        email_format << "Content-Transfer-Encoding: 7bit\r\n\r\n";
         email_format << message << "\r\n";
     }
 
-    // Attachment(s)
+    // Attachments
     for (const auto& file_path : attachment_list) {
         std::cout << "Attempting to open file: " << file_path << std::endl;
 
@@ -247,17 +267,14 @@ std::string Email::formatMail() const {
 
         // Read and encode file content in base64
         std::ifstream file(file_path, std::ios::binary);
-        if (file.is_open()) 
-        {
+        if (file.is_open()) {
             std::ostringstream file_content;
             file_content << file.rdbuf();
             file.close();
 
             std::string base64_content = base64_encode(reinterpret_cast<const unsigned char*>(file_content.str().data()), file_content.str().size());
             email_format << base64_content << "\r\n";
-        } 
-        else 
-        {
+        } else {
             // Handle file opening error
             std::cerr << "Error opening file: " << file_path << std::endl;
         }
@@ -272,4 +289,118 @@ std::string Email::formatMail() const {
 }
 
 
+std::string eraseWhitespace(std::string str)
+{
+    str.erase(str.find_last_not_of(" \t\r\n") + 1);
+    str.erase(0, str.find_first_not_of(" \t\r\n"));
+    return str;
+}
+
+std::string eraseQuotationMarks(std::string str)
+{
+    str.erase(str.find_last_of("\""));
+    str.erase(0, str.find_first_not_of("\""));
+    return str;
+}
+
+void Email::loadEmail(const std::string& email_content)
+{
+    std::istringstream email_stream(email_content);
+    std::string line;
+
+    cc_list.clear();
+    bcc_list.clear();
+    attachment_list.clear();
+    message.clear();
+
+    size_t boundary_pos = email_content.find("boundary=");
+    bool hasAttachment = (boundary_pos != std::string::npos);
+    boundary = email_content.substr(boundary_pos + 10, 36); // my boundary has 36 character
+
+    // read header
+    while (std::getline(email_stream, line))
+    {
+        if (line == ("--" + boundary + "\r"))
+            break;
+        size_t colons_pos = line.find(":");
+        if (colons_pos != std::string::npos)
+        {
+            std::string header = line.substr(0, colons_pos);
+            std::string value = line.substr(colons_pos + 2); //skip ": "
+        
+            if (header == "From")
+            {
+                email_sender = value;
+            }
+            else if (header == "To")
+            {
+                email_recipient = value;
+            }
+            else if (header == "CC")
+            {
+                std::istringstream cc_stream(value);
+                std::string cc_recipient;
+                while (std::getline(cc_stream, cc_recipient, ','))
+                {
+                    cc_list.push_back(cc_recipient);
+                }
+            }
+            else if (header == "Subject")
+            {
+                subject = value;
+            }
+        }
+            
+    }
+
+
+    if (hasAttachment)
+    {
+        // message
+        while (std::getline(email_stream, line) && line != "\r") {}
+        
+        while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))
+        {
+            message += eraseWhitespace(line);
+        }
+        
+
+        while (std::getline(email_stream, line) && line != ("--" + boundary + "--\r"))
+        {
+            DEBUG(line);
+            // Content-Disposition
+            std::getline(email_stream, line);
+            size_t filename_pos = line.find("filename=");
+            std::string filename = line.substr(filename_pos + 9);
+            filename = eraseQuotationMarks(filename);
+            std::cout << "\nFilename: " << filename; 
+            DEBUG(line);
+            // Content-Transfer-Encoding
+            std::getline(email_stream, line);
+            DEBUG(line);
+            // Empty line
+            std::getline(email_stream, line);
+            DEBUG(line);
+
+            std::ostringstream base64_content;
+            while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))
+            {
+                base64_content << eraseWhitespace(line);
+            }
+
+            attachment_list.push_back(filename + "\n" + base64_content.str());
+        }
+
+    }
+    else
+    {
+        while (std::getline(email_stream, line) && line != "\r") {}
+        
+        while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))
+        {
+            message += eraseWhitespace(line);
+        }
+    }
+
+}
 
