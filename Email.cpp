@@ -311,6 +311,7 @@ void Email::loadEmail(const std::string& email_content)
     cc_list.clear();
     bcc_list.clear();
     attachment_list.clear();
+    attachment_filename_list.clear();
     message.clear();
 
     size_t boundary_pos = email_content.find("boundary=");
@@ -387,8 +388,8 @@ void Email::loadEmail(const std::string& email_content)
             {
                 base64_content << eraseWhitespace(line);
             }
-
-            attachment_list.push_back(filename + "\n" + base64_content.str());
+            attachment_filename_list.push_back(filename);
+            attachment_list.push_back(base64_content.str());
         }
 
     }

@@ -21,6 +21,7 @@ private:
     std::vector<std::string> cc_list;
     std::vector<std::string> bcc_list;
     std::vector<std::string> attachment_list;
+    std::vector<std::string> attachment_filename_list;
     
 
 
