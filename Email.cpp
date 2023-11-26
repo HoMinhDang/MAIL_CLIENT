@@ -215,7 +215,7 @@ std::string Email::formatMail() const {
 
     // Set the Content-Type header for multipart messages
     if (hasAttachments)
-        email_format << "Content-Type: multipart/mixed; boundary="" << boundary << ""\r\n";
+        email_format << "Content-Type: multipart/mixed; boundary=\"" << boundary << "\"\r\n";
 
     // Common email headers
     email_format << "Message-ID: " << genMessageID() << "\r\n";
@@ -272,8 +272,16 @@ std::string Email::formatMail() const {
             file_content << file.rdbuf();
             file.close();
 
+            const int chunk_size = 1024;
             std::string base64_content = base64_encode(reinterpret_cast<const unsigned char*>(file_content.str().data()), file_content.str().size());
-            email_format << base64_content << "\r\n";
+            // email_format << base64_content << "\r\n";
+            for (size_t i = 0; i < base64_content.size(); i += chunk_size)
+            {
+                size_t chunk_end = std::min(i + chunk_size, base64_content.size());
+                std::string chunk = base64_content.substr(i, chunk_end - i) + "\r\n";
+                email_format << chunk;
+            }
+
         } else {
             // Handle file opening error
             std::cerr << "Error opening file: " << file_path << std::endl;
