@@ -323,9 +323,12 @@ void Email::loadEmail(const std::string& email_content)
     message.clear();
 
     size_t boundary_pos = email_content.find("boundary=");
+    size_t boundary_end_pos = email_content.find('\n', boundary_pos);
     bool hasAttachment = (boundary_pos != std::string::npos);
-    boundary = email_content.substr(boundary_pos + 10, 36); // my boundary has 36 character
+    std::string tmp_boundary = email_content.substr(boundary_pos + 9, boundary_end_pos - boundary_pos); // my boundary has 36 character
 
+    std::string boundary = eraseWhitespace(eraseQuotationMarks(tmp_boundary));
+    
     // read header
     while (std::getline(email_stream, line))
     {
@@ -357,6 +360,10 @@ void Email::loadEmail(const std::string& email_content)
             else if (header == "Subject")
             {
                 subject = value;
+            }
+            else if (header == "Date")
+            {
+                date = value;
             }
         }
             
@@ -405,7 +412,7 @@ void Email::loadEmail(const std::string& email_content)
     {
         while (std::getline(email_stream, line) && line != "\r") {}
         
-        while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))
+        while (std::getline(email_stream, line) && line != (".\r"))
         {
             message += eraseWhitespace(line);
         }
