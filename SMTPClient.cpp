@@ -41,12 +41,7 @@ void SMTPClient::sendEmail(const Email& email)
     receiveResponse();
 
     // Send email content
-    // Send email content in chunks
-    std::string emailContent = email.formatMail();
-    const int chunk_size = 1024; // Choose an appropriate chunk size
-    for (size_t i = 0; i < emailContent.length(); i += chunk_size) {
-        sendCommand(emailContent.substr(i, chunk_size) + "\r\n"); 
-    }
+    sendCommand(email.formatMail());
     
     sendCommand(".\r\n");
 
