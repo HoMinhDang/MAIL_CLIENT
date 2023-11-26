@@ -109,7 +109,7 @@ std::string POP3Client::retrieveEmail(int email_number)
     if (downloaded_email.find(email_uid) != downloaded_email.end())
     {
         //debug
-        std::cout << "Email with UID " << email_uid << " has already been downloaded.\n";
+        // std::cout << "Email with UID " << email_uid << " has already been downloaded.\n";
         return "";
     }
 
@@ -120,26 +120,26 @@ std::string POP3Client::retrieveEmail(int email_number)
 
     downloaded_email.insert(email_uid);
 
-    // debug
-    std::cout << "Email content for email number " << email_number << ":\n" << email_content;
-
     return email_content;
 }
 
 void POP3Client::retrieveAllEmail()
 {
+    list_email.clear();
     getCountEmail();
     getListUID();
     for(int i = 1; i <= count_email; i++)
     {
+        std::string email_name = list_uid[i].substr(0, list_uid[i].find(".msg"));
         std::string email_content = retrieveEmail(i);
         if (email_content != "")
-            list_email.push_back(email_content);
+            list_email.push_back({email_content, email_name});
     }
 }
 
 void POP3Client::loadDownloadedEmail(const std::string& username)
 {
+    downloaded_email.clear();
     std::string database_folder = "database";
     std::string filename = "downloaded_email_UID.txt";
     std::string file_path = database_folder + "/" + username + "/" + filename;
@@ -179,6 +179,6 @@ void POP3Client::saveDownloadEmail(const std::string& username)
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file: " << file_path << std::endl;
+        std::cerr << "Unable to open file: " << file_path << "\n";
     }
 }

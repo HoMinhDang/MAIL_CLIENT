@@ -11,6 +11,7 @@ private:
     ~WinsockManager();
 
 public:
+    // use to initialize WSA once time through application
     static WinsockManager& getInstance();
 };
 

@@ -41,17 +41,13 @@ void SMTPClient::sendEmail(const Email& email)
     receiveResponse();
 
     // Send email content
-    sendCommand(email.formatMail());
+    sendCommand(email.formatEmail());
     
     sendCommand(".\r\n");
 
     // Quit session
     sendCommand("QUIT\r\n");
     receiveResponse();
-
-    // Close Socket and WSA
-    closesocket(client_socket);
-    WSACleanup();
 }
 
 

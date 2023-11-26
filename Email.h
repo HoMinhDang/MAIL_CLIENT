@@ -45,24 +45,31 @@ public:
         : email_sender(SENDER), email_recipient(TO), subject(SUBJECT), message(MSG) {}
 
     // add cc, bcc, file_path
-    void addCc(const std::string& recipient);
+    void addCc(const std::string& recipient);  
     void addBcc(const std::string& recipient);
     void attachFile(const std::string& file_path);
 
     // getter 
-    std::string getSender() const;
-    std::string getRecipient() const;
-    std::string getCC() const;
-    std::vector<std::string> getListCC() const;
-    std::string getBCC() const;
-    std::vector<std::string> getListBCC() const;
-    std::string getSubject() const;
-    std::string getMessage() const;
+    std::string getDate() const; // get date, use to show "Date: "
+    std::string getSender() const; // get sender,  use to show "From: "
+    std::string getRecipient() const; // get recipient, use to show "To: "
+    std::string getSubject() const; // get subject, use to show "Subject: "
+    std::string getMessage() const; // get Message, use to show "Message: "
+    std::string getCC() const; // get list of cc, use to show "Cc: "
+    std::vector<std::string> getListCC() const; // get vector list_cc
+    std::string getBCC() const;// get list of bcc, use to show "Bcc: ", but it is unecessary
+    std::vector<std::string> getListBCC() const; // get vector list_bcc
 
-    // return format of mail
-    std::string formatMail() const;
+        // get vector<file_content, filename> use to save attachment when using func saveFile
+    std::vector<std::pair<std::string, std::string>> getAttachment() const; 
 
-    void loadEmail(const std::string& email_content);
+    
+    std::string formatEmail() const; // return format of mail
+
+        // load email_content to class Email
+        // set date, sender, recipient, subject, message, list_cc, attachment
+        // use when having email_content and want to show
+    void loadEmail(const std::string& email_content); 
 };
     
 #endif // EMAIL

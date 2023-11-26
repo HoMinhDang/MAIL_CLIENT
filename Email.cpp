@@ -101,6 +101,18 @@ std::string Email::getMessage() const
     return message;
 }
 
+std::vector<std::pair<std::string, std::string>> Email::getAttachment() const
+{
+    std::vector<std::pair<std::string, std::string>> file_content_and_filename;
+    for (int i = 0; i < attachment_list.size(); ++i)
+        file_content_and_filename.push_back({attachment_list[i], attachment_filename_list[i]});
+    return file_content_and_filename;
+}
+
+std::string Email::getDate() const
+{
+    return date;
+}
 
 // Handle file_path
 std::string Email::getFilename(const std::string& file_path) const
@@ -205,7 +217,8 @@ std::string Email::genBoundary() const
 }
 
 
-std::string Email::formatMail() const {
+
+std::string Email::formatEmail() const {
     std::ostringstream email_format;
 
     std::string boundary = genBoundary();
@@ -251,7 +264,8 @@ std::string Email::formatMail() const {
 
     // Attachments
     for (const auto& file_path : attachment_list) {
-        std::cout << "Attempting to open file: " << file_path << std::endl;
+        // DEBUG
+        // std::cout << "Attempting to open file: " << file_path << std::endl;
 
         std::string file_name = getFilename(file_path);
 
@@ -390,13 +404,8 @@ void Email::loadEmail(const std::string& email_content)
             std::string filename = line.substr(filename_pos + 9);
             filename = eraseQuotationMarks(filename);
             std::cout << "\nFilename: " << filename; 
-            DEBUG(line);
-            // Content-Transfer-Encoding
-            std::getline(email_stream, line);
-            DEBUG(line);
-            // Empty line
-            std::getline(email_stream, line);
-            DEBUG(line);
+            while(std::getline(email_stream, line) && line != "\r")
+                DEBUG(line);
 
             std::ostringstream base64_content;
             while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))

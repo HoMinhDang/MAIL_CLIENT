@@ -22,7 +22,7 @@ protected:
     // receive response from server
     std::string receiveResponse() const;
 
-    // display response from server - use for debug
+    // display response from the server - use for debug
     void displayResponse(const std::string& response) const;
 
 public:
@@ -30,7 +30,7 @@ public:
     Client(const std::string& server_address, int server_port);
     virtual ~Client();
 
-    // connect to server
+    // connect to the server
     bool connectToServer() ;
 };
 

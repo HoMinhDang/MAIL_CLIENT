@@ -29,7 +29,8 @@ std::string Client::receiveResponse() const
     {
         buffer[bytes] = '\0';
         std::string response(buffer);
-        displayResponse(response); // use when debug
+        // DEBUG:
+        // displayResponse(response); 
         return response;
     }
     return "";
