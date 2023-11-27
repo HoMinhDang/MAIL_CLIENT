@@ -325,7 +325,7 @@ std::string eraseQuotationMarks(std::string str)
     return str;
 }
 
-void Email::loadEmail(const std::string& email_content)
+Email::Email(const std::string& email_content)
 {
     std::istringstream email_stream(email_content);
     std::string line;
@@ -426,6 +426,5 @@ void Email::loadEmail(const std::string& email_content)
             message += eraseWhitespace(line);
         }
     }
-
 }
 

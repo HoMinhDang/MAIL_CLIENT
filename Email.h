@@ -38,11 +38,15 @@ private:
     std::string genBoundary() const;
 
 public:
-    
-    Email() : email_sender(""), email_recipient(""), subject(""), message("") {}
     // constructor
+    Email() : email_sender(""), email_recipient(""), subject(""), message("") {}
+    
     Email(const std::string& SENDER, const std::string& TO, const std::string& SUBJECT, const std::string& MSG)
         : email_sender(SENDER), email_recipient(TO), subject(SUBJECT), message(MSG) {}
+        // load email_content to class Email
+        // set date, sender, recipient, subject, message, list_cc, attachment
+        // use when having email_content and want to show
+    Email(const std::string& email_content);
 
     // add cc, bcc, file_path
     void addCc(const std::string& recipient);  
@@ -66,10 +70,8 @@ public:
     
     std::string formatEmail() const; // return format of mail
 
-        // load email_content to class Email
-        // set date, sender, recipient, subject, message, list_cc, attachment
-        // use when having email_content and want to show
-    void loadEmail(const std::string& email_content); 
+    
+     
 };
     
 #endif // EMAIL
