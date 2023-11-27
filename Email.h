@@ -52,6 +52,8 @@ public:
     void addCc(const std::string& recipient);  
     void addBcc(const std::string& recipient);
     void attachFile(const std::string& file_path);
+    
+    std::string formatEmail() const; // return format of mail
 
     // getter 
     std::string getDate() const; // get date, use to show "Date: "
@@ -63,12 +65,11 @@ public:
     std::vector<std::string> getListCC() const; // get vector list_cc
     std::string getBCC() const;// get list of bcc, use to show "Bcc: ", but it is unecessary
     std::vector<std::string> getListBCC() const; // get vector list_bcc
-
         // get vector<file_content, filename> use to save attachment when using func saveFile
     std::vector<std::pair<std::string, std::string>> getAttachment() const; 
 
     
-    std::string formatEmail() const; // return format of mail
+    
 
     
      
