@@ -123,11 +123,11 @@ std::string POP3Client::retrieveEmail(int email_number)
     return email_content;
 }
 
-void POP3Client::retrieveAllEmail()
+std::vector<std::pair<std::string, std::string>> POP3Client::retrieveAllEmail()
 {
-    list_email.clear();
     getCountEmail();
     getListUID();
+    std::vector<std::pair<std::string, std::string>> list_email;
     for(int i = 1; i <= count_email; i++)
     {
         std::string email_name = list_uid[i].substr(0, list_uid[i].find(".msg"));
@@ -135,6 +135,7 @@ void POP3Client::retrieveAllEmail()
         if (email_content != "")
             list_email.push_back({email_content, email_name});
     }
+    return list_email;
 }
 
 void POP3Client::loadDownloadedEmail(const std::string& username)
