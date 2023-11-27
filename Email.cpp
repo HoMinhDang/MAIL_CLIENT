@@ -397,15 +397,15 @@ Email::Email(const std::string& email_content)
 
         while (std::getline(email_stream, line) && line != ("--" + boundary + "--\r"))
         {
-            DEBUG(line);
+            
             // Content-Disposition
             std::getline(email_stream, line);
             size_t filename_pos = line.find("filename=");
             std::string filename = line.substr(filename_pos + 9);
             filename = eraseQuotationMarks(filename);
             std::cout << "\nFilename: " << filename; 
-            while(std::getline(email_stream, line) && line != "\r")
-                DEBUG(line);
+            while(std::getline(email_stream, line) && line != "\r"){}
+            
 
             std::ostringstream base64_content;
             while (std::getline(email_stream, line) && line != ("--" + boundary + "\r"))
