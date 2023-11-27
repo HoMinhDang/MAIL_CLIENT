@@ -22,8 +22,6 @@ private:
     std::vector<std::string> attachment_list;
     std::vector<std::string> attachment_filename_list;
     
-
-
     // Handle file_path
     std::string getFilename(const std::string& file_path) const;
     std::string getFileExtension(const std::string& file_name) const;
@@ -68,11 +66,6 @@ public:
         // get vector<file_content, filename> use to save attachment when using func saveFile
     std::vector<std::pair<std::string, std::string>> getAttachment() const; 
 
-    
-    
-
-    
-     
 };
     
 #endif // EMAIL
