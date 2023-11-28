@@ -135,6 +135,7 @@ std::vector<std::pair<std::string, std::string>> POP3Client::retrieveAllEmail()
         if (email_content != "")
             list_email.push_back({email_content, email_name});
     }
+    sendCommand("QUIT\r\n");
     return list_email;
 }
 
