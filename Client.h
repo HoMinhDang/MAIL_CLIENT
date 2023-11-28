@@ -6,6 +6,40 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+#ifndef WINSOCK_MANAGER_H
+#define WINSOCK_MANAGER_H
+
+
+class WinsockManager {
+private:
+    WSADATA wsa_data;
+
+    WinsockManager() 
+    {
+        // Create Windows sockets API
+        WORD w_version_requested = MAKEWORD(2, 2); // version 2.2 of Winsock
+        // WSAStarup return 0 on success 
+        if (WSAStartup(w_version_requested, &wsa_data) != 0)
+        {
+            std::cerr << "Failed to initialize Winsock." << std::endl;
+        }
+    }
+    ~WinsockManager() 
+    {
+        WSACleanup();
+    }
+
+public:
+    // use to initialize WSA once time through application
+    static WinsockManager& getInstance() 
+    {
+        static WinsockManager instance;
+        return instance;
+    }
+};
+
+#endif // WINSOCK_MANAGER_H
+
 #ifndef CLIENT_H
 #define CLIENT_H
 
