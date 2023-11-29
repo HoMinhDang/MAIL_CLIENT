@@ -15,7 +15,7 @@ int main()
     Email email(sender, recipient, subject, body);
     email.addBcc(sender);
     email.addCc("minhdang@gamil.com");
-    email.attachFile("d:\\W02 - Cons-Des-Op.pdf");
+    //Ưemail.attachFile("d:\\W02 - Cons-Des-Op.pdf");
 
     local_server.sendEmail(email);
 

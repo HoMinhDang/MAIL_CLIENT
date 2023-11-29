@@ -2,7 +2,6 @@
 #include <string>
 #include <winsock2.h>
 #include "base64.h"
-#include "WinsockManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
