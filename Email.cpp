@@ -114,6 +114,10 @@ std::string Email::getDate() const
     return date;
 }
 
+bool Email::checkOpen() const{
+    return isOpen;
+}
+
 // Handle file_path
 std::string Email::getFilename(const std::string& file_path) const
 {
@@ -335,6 +339,10 @@ Email::Email(const std::string& email_content)
     attachment_list.clear();
     attachment_filename_list.clear();
     message.clear();
+
+    if(email_content.find("isOpen") != std::string::npos){
+        isOpen = true;
+    }
 
     size_t boundary_pos = email_content.find("boundary=");
     size_t boundary_end_pos = email_content.find('\n', boundary_pos);
