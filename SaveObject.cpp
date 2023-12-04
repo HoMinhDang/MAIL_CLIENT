@@ -47,11 +47,14 @@ void saveFile(const std::string& file_path, const std::string& filename, const s
     std::vector<BYTE> decoded_content = base64_decode(file_content);
 
     std::ofstream file(file_path + "/" + filename, std::ios::binary);
-    if (file.is_open()) {
+    if (file.is_open()) 
+    {
         file.write(reinterpret_cast<const char*>(decoded_content.data()), decoded_content.size());
         file.close();
-        std::cout << "File saved successfully: " << file_path << "/" << filename << std::endl;
-    } else {
+        // std::cout << "File saved successfully: " << file_path << "/" << filename << std::endl;
+    } 
+    else 
+    {
         std::cerr << "Error: Unable to open file for writing: " << file_path << "/" << filename << std::endl;
     }
 }

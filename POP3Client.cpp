@@ -147,14 +147,13 @@ void POP3Client::loadDownloadedEmail(const std::string& username)
     std::string file_path = database_folder + "/" + username + "/" + filename;
 
     std::ifstream file(file_path);
-    if (file.is_open()) {
+    if (file.is_open()) 
+    {
         std::string email;
         while (std::getline(file, email)) {
             downloaded_email.insert(email);
         }
         file.close();
-    } else {
-        std::cerr << "Unable to open file: " << file_path << std::endl;
     }
 }
 
@@ -166,21 +165,23 @@ void POP3Client::saveDownloadEmail(const std::string& username)
     std::string file_path = user_folder + "/" + filename;
 
     // Create the folder if it doesn't exist
-    if (!std::filesystem::exists(database_folder)) {
+    if (!std::filesystem::exists(database_folder)) 
+    {
         std::filesystem::create_directory(database_folder);
     }
 
-    if (!std::filesystem::exists(user_folder)) {
+    if (!std::filesystem::exists(user_folder)) 
+    {
         std::filesystem::create_directory(user_folder);
     }
 
     std::ofstream file(file_path);
-    if (file.is_open()) {
-        for (const auto& email : downloaded_email) {
+    if (file.is_open()) 
+    {
+        for (const auto& email : downloaded_email) 
+        {
             file << email << "\n";
         }
         file.close();
-    } else {
-        std::cerr << "Unable to open file: " << file_path << "\n";
     }
 }
