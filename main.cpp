@@ -5,33 +5,44 @@
 int main()
 {
 
-    SMTPClient local_server("127.0.0.1", 2500);
+    // SMTPClient local_server("127.0.0.1", 2500);
 
-    std::string sender = "minhdang@fit.hcmus.edu.vn";
-    std::string recipient = "minhdang@fit.hcmus.edu.vn";
-    std::string subject = "First mail from my client";
-    std::string body = "Helo";
+    // std::string sender = "minhdang@fit.hcmus.edu.vn";
+    // std::string recipient = "minhdang@fit.hcmus.edu.vn";
+    // std::string subject = "First mail from my client";
+    // std::string body = "Helo";
 
-    Email email(sender, recipient, subject, body);
-    email.addBcc(sender);
-    email.addCc("minhdang@gamil.com");
-    //Ưemail.attachFile("d:\\W02 - Cons-Des-Op.pdf");
+    // Email email(sender, recipient, subject, body);
+    // email.addBcc(sender);
+    // email.addCc("minhdang@gamil.com");
+    // // email.attachFile("d:\\W02 - Cons-Des-Op.pdf");
 
-    local_server.sendEmail(email);
+    // local_server.sendEmail(email);
 
     //-------------------------
 
-    // POP3Client local_client("127.0.0.1", 1100);
-    // std::string username = "minhdang@fit.hcmus.edu.vn";
-    // std::string password = "minhdang123456";
+    POP3Client local_client("127.0.0.1", 1100);
+    std::string username = "minhdang@fit.hcmus.edu.vn";
+    std::string password = "minhdang123456";
 
-    // local_client.login(username, password);
+    local_client.login(username, password);
 
-    // // local_client.loadDownloadedEmail(username);
-    // local_client.retrieveAllEmail();
-    // for (const auto& email : local_client.list_email) {
-    //     std::cout << "Email:\n" << email << "\n\n";
-    // }
+    // local_client.loadDownloadedEmail(username);
+    std::vector<std::pair<std::string,std::string>> list_email = local_client.retrieveAllEmail();
+    std::vector<Email> emails;
+    for (const auto& email : list_email) {
+        emails.push_back(Email(email.first));
+    }
+
+    for (const auto& email : emails)
+    {
+        std::cout << "\nFrom: " << email.getSender();
+        std::cout << "\nTo: " << email.getRecipient();
+        std::cout << "\nCC: " << email.getCC();
+        std::cout << "\nSubject: " << email.getSubject();
+        std::cout << "\nMessage: " << email.getMessage();
+        std::cout << "\n\n";
+    }
     // saveEmail(username, local_client.list_email[15], "minhdang55.txt", "Importance");
     
     // std::ifstream file ("D:\\Code\\C++\\MMT\\Socket\\Source code\\database\\minhdang@fit.hcmus.edu.vn\\Importance\\minhdang55.txt");
@@ -45,11 +56,7 @@ int main()
     // email.loadEmail(file_content.str());
     // // local_client.saveDownloadEmail(username);
 
-    // std::cout << "\nFrom: " << email.getSender();
-    // std::cout << "\nTo: " << email.getRecipient();
-    // std::cout << "\nCC: " << email.getCC();
-    // std::cout << "\nSubject: " << email.getSubject();
-    // std::cout << "\nMessage: " << email.getMessage();
+    
 
     
     // saveFile("E:", "W02 - Cons-Des-Op.pdf", file_content.str());
