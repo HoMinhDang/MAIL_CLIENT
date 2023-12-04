@@ -114,6 +114,11 @@ std::string Email::getDate() const
     return date;
 }
 
+bool Email::checkIsOpened() const
+{
+    return isOpen;
+}
+
 // Handle file_path
 std::string Email::getFilename(const std::string& file_path) const
 {

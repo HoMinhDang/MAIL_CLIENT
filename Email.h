@@ -66,6 +66,8 @@ public:
         // get vector<file_content, filename> use to save attachment when using func saveFile
     std::vector<std::pair<std::string, std::string>> getAttachment() const; 
 
+    bool checkIsOpened() const;
+
 };
     
 #endif // EMAIL
