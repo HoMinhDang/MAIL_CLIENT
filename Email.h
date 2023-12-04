@@ -21,7 +21,7 @@ private:
     std::vector<std::string> bcc_list;
     std::vector<std::string> attachment_list;
     std::vector<std::string> attachment_filename_list;
-    
+    bool isOpen = false;
     // Handle file_path
     std::string getFilename(const std::string& file_path) const;
     std::string getFileExtension(const std::string& file_name) const;

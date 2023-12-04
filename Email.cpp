@@ -114,10 +114,6 @@ std::string Email::getDate() const
     return date;
 }
 
-bool Email::checkOpen() const{
-    return isOpen;
-}
-
 // Handle file_path
 std::string Email::getFilename(const std::string& file_path) const
 {
@@ -263,7 +259,7 @@ std::string Email::formatEmail() const {
         // Single-part body
         email_format << "Content-Type: text/plain; charset=utf-8; format=flowed\r\n";
         email_format << "Content-Transfer-Encoding: 7bit\r\n\r\n";
-        email_format << message << "\r\n";
+        email_format << message << "\r\n\r\n";
     }
 
     // Attachments
@@ -324,6 +320,8 @@ std::string eraseWhitespace(std::string str)
 
 std::string eraseQuotationMarks(std::string str)
 {
+    if (str.find('\"') == std::string::npos)
+        return str;
     str.erase(str.find_last_of("\""));
     str.erase(0, str.find_first_not_of("\""));
     return str;
@@ -331,6 +329,9 @@ std::string eraseQuotationMarks(std::string str)
 
 Email::Email(const std::string& email_content)
 {
+    if (email_content.find("isOpened") != std::string::npos)
+        isOpen = true;
+
     std::istringstream email_stream(email_content);
     std::string line;
 
@@ -340,10 +341,6 @@ Email::Email(const std::string& email_content)
     attachment_filename_list.clear();
     message.clear();
 
-    if(email_content.find("isOpen") != std::string::npos){
-        isOpen = true;
-    }
-
     size_t boundary_pos = email_content.find("boundary=");
     size_t boundary_end_pos = email_content.find('\n', boundary_pos);
     bool hasAttachment = (boundary_pos != std::string::npos);
@@ -352,10 +349,8 @@ Email::Email(const std::string& email_content)
     std::string boundary = eraseWhitespace(eraseQuotationMarks(tmp_boundary));
     
     // read header
-    while (std::getline(email_stream, line))
+    while (std::getline(email_stream, line) && line != "\r")
     {
-        if (line == ("--" + boundary + "\r"))
-            break;
         size_t colons_pos = line.find(":");
         if (colons_pos != std::string::npos)
         {
@@ -411,7 +406,9 @@ Email::Email(const std::string& email_content)
             size_t filename_pos = line.find("filename=");
             std::string filename = line.substr(filename_pos + 9);
             filename = eraseQuotationMarks(filename);
-            std::cout << "\nFilename: " << filename; 
+
+            //DEBUG
+            // std::cout << "\nFilename: " << filename; 
             while(std::getline(email_stream, line) && line != "\r"){}
             
 
@@ -426,9 +423,7 @@ Email::Email(const std::string& email_content)
 
     }
     else
-    {
-        while (std::getline(email_stream, line) && line != "\r") {}
-        
+    {        
         while (std::getline(email_stream, line) && line != (".\r"))
         {
             message += eraseWhitespace(line);
