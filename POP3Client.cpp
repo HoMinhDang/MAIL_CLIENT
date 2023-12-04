@@ -26,7 +26,7 @@ std::string POP3Client::receiveResponsePOP3() const
         }
     }
 
-    displayResponse(response);
+    // displayResponse(response);
 
     return response;
 }
