@@ -411,6 +411,7 @@ Email::Email(const std::string& email_content)
             size_t filename_pos = line.find("filename=");
             std::string filename = line.substr(filename_pos + 9);
             filename = eraseQuotationMarks(filename);
+            filename = eraseWhitespace(filename);
 
             //DEBUG
             // std::cout << "\nFilename: " << filename; 
