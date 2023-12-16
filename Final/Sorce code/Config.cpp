@@ -1,13 +1,13 @@
 #include "Config.h"
 
-Account::Account(std::string EMAIL, std::string PASS, std::string NAME, string MAILSERVER, int PORTSMTP, int PORTPOP3, int AUTOLOAD) {
+Account::Account(std::string EMAIL, std::string PASS, std::string NAME, string MAILSERVER, int PORTSMTP, int PORTPOP3, int AUTOLOADD) {
     Email = EMAIL;
     Password = PASS;
     Name = NAME;
     MailServer = MAILSERVER;
     portSMTP = PORTSMTP;
     portPOP3 = PORTPOP3;
-    Autoload = AUTOLOAD;
+    Autoload = AUTOLOADD;
 }
 
 void Account::printInfor(){
@@ -41,6 +41,9 @@ int Account::getPortPOP3(){
     return portPOP3;
 }
 
+int Account::getAutoload(){
+    return Autoload;
+}
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     for(int i=0; i<argc; i++){
         if (argv[i] != nullptr) {
@@ -60,7 +63,7 @@ static int loadback(void *data, int argc, char **argv, char **azColName){
     int port_smtp = std::stoi(argv[4]);
     int port_pop3 = std::stoi(argv[5]);
     int autoload = std::stoi(argv[6]);
-    Account Ex(argv[0], argv[1], argv[2], argv[3], port_smtp, port_pop3, AutoLoad);
+    Account Ex(argv[0], argv[1], argv[2], argv[3], port_smtp, port_pop3, autoload);
     List->emplace_back(Ex);
 
     return 0;
@@ -107,11 +110,10 @@ void CreateDatabase(){
         sqlite3_free(zErrMsg);
     }
 
-    system("pause");
     sqlite3_close(db);
 }
 
-void InsertDatabase(string email, string password, string name, string mailserver, int port_smtp, int port_pop3,  int autoload){
+void InsertDatabase(string email, string password, string name, string mailserver, int port_smtp, int port_pop3,  int Autoload){
     sqlite3 *db;
     char* zErrMsg = 0;
     int rc;
@@ -125,9 +127,8 @@ void InsertDatabase(string email, string password, string name, string mailserve
 
     // Insert
     string sql;
-
     sql = "INSERT INTO ACCOUNT (EMAIL, PASSWORD, NAME, MAILSERVER, PORTSMTP, PORTPOP3, AUTOLOAD) VALUES ('" +
-        email + "', '" + password + "', '" + name + "', '" + mailserver + "', '" + std::to_string(port_smtp) + "', '" + std::to_string(port_pop3) +  "', " + std::to_string(autoload) + ");";
+        email + "', '" + password + "', '" + name + "', '" + mailserver + "', '" + std::to_string(port_smtp) + "', '" + std::to_string(port_pop3) +  "', " + std::to_string(Autoload) + ");";
 
     // Thuc thi cau lenh SQL
 
@@ -140,7 +141,6 @@ void InsertDatabase(string email, string password, string name, string mailserve
     }
 
     sqlite3_close(db);
-    system("pause");
 }
 
 void SelectDatabase(vector<Account>* List){

@@ -39,11 +39,6 @@ void Email::attachFile(const std::string& file_path)
         }
         file.close();
     }
-    else
-    {
-        std::cerr << "Error opening file: " << file_path << std::endl;
-    }
-    
 }
 
 //Getter
@@ -245,7 +240,8 @@ std::string Email::formatEmail() const {
     // Sender and recipient information
     email_format << "From: " << email_sender << "\r\n";
     email_format << "To: " << email_recipient << "\r\n";
-    email_format << "CC: " << getCC() << "\r\n";
+    if(!cc_list.empty())
+        email_format << "CC: " << getCC() << "\r\n";
     // Uncomment the line below if BCC is needed
     // email_format << "BCC: " << getBCC() << "\r\n";
     if (hasAttachments)
@@ -412,7 +408,8 @@ Email::Email(const std::string& email_content)
             std::string filename = line.substr(filename_pos + 9);
             filename = eraseQuotationMarks(filename);
             filename = eraseWhitespace(filename);
-            //DEBUG
+            
+    
             // std::cout << "\nFilename: " << filename; 
             while(std::getline(email_stream, line) && line != "\r"){}
             

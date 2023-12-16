@@ -4,6 +4,7 @@
 
 int main(){
     if(LoginWindow() == true){
+        isBeginAutoload = true;
         downloadMail();
         
         std::thread autoDownloadThread(autoDownloadMail);
@@ -11,7 +12,7 @@ int main(){
         while(true)
             MailBoxWindow();
         
-        autoDownloadThread.detach();
+        autoDownloadThread.join();
     }
     return 0;
 }

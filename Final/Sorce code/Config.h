@@ -46,7 +46,8 @@ static std::string UserName;
 static std::string UserMailServer;
 static int UserPortSMTP;
 static int UserPortPop3;
-static int UserAutoload;
+static int UserAutoload = 0;
+static bool isBeginAutoload = false;
 
 static vector<std::string> WorkKeywords;
 static vector<std::string> ImportantKeyworks;
@@ -72,6 +73,7 @@ class Account{
         string getMailServer();
         int getPortSMTP();
         int getPortPOP3();
+        int getAutoload();
         void printInfor();
 };
 

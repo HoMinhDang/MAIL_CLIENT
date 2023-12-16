@@ -29,23 +29,6 @@ bool LoginWindow(){
     std::cout << "Loaded successfully!" << std::endl;
     ClearScreen;
 
-
-    for(auto key: WorkKeywords)
-        cout << key << " ";
-        cout << endl;
-    for(auto key: ProjectKeywords)
-        cout << key << " ";
-        cout << endl;       
-    for(auto key: SpamKeyworks)
-        cout << key << " ";
-        cout << endl;
-    for(auto key: ImportantKeyworks)
-        cout << key << " ";
-        cout << endl;
-    for(auto ACC: AccountList)
-        ACC.printInfor();
-    
-    system("pause");
     /* LOGIN */
     setColor(LIGHTRED);
     std::cout << "Email Client\n";
@@ -75,6 +58,8 @@ bool LoginWindow(){
                     UserMailServer = account.getMailServer();
                     UserPortSMTP = account.getPortSMTP();
                     UserPortPop3 = account.getPortPOP3();
+                    UserAutoload = account.getAutoload();
+
                     isLoginCompleted = true;
                     break;
                 }
@@ -103,13 +88,13 @@ bool LoginWindow(){
     std::cout << "Account does not exist. Register? (Y/N)" << std::endl;
     std::cout << "Your choice: ";
     std::cin >> Ans;
-    
+    std::cin.ignore();
+
     if(Ans != 'Y'){
         return false;
     }
     else{
         std::cout << "Your name: ";
-        std::cin.ignore();
         std::getline(std::cin, UserName);
 
         std::cout << "Password: ";
@@ -131,6 +116,7 @@ bool LoginWindow(){
         std::cin.ignore();
 
         InsertDatabase(UserEmail, UserPassword, UserName, UserMailServer, UserPortSMTP, UserPortPop3, UserAutoload);
+    
         std::cout << "Successfully registered" << std::endl;
             
         return true;
@@ -272,18 +258,14 @@ void displayEmail(std::pair<std::string, Email> email, int stt){
     if(!attachfile.empty()){
         cout << "This mail has attachment(s). Do you want to download it? (Y/N)";
         cin >> s;
+        std::cin.ignore();
         if(s == 'Y')
             for(const auto& file: attachfile){
                 saveFile("D:", file.second, file.first);
             }
     }
         
-    cout << line << "Enter ESC to back";  
-    while(true){
-        s = _getch();
-        if(s == ESC)
-            return;
-    }
+    system("pause");
 }
 
 void InboxWindow(){
@@ -307,6 +289,7 @@ void InboxWindow(){
     setColor(LIGHTAQUA);
     std::cout << "Your choice: ";
     std::cin >> stt;
+    std::cin.ignore();
     setColor(WHITE);
 
     if(stt == 0)
@@ -321,7 +304,7 @@ void WorkMailWindow(){
     
     if(WorkList.empty()){
         setColor(LIGHTRED);
-        std::cout << "Empty!" << endl;
+        std::cout << "There are no emails in here!" << endl;
         setColor(WHITE);
         
         Sleep(2500);
@@ -334,6 +317,7 @@ void WorkMailWindow(){
     setColor(LIGHTAQUA);
     std::cout << "Your choice: ";
     std::cin >> stt;
+    std::cin.ignore();
     setColor(WHITE);
 
     if(stt == 0)
@@ -350,7 +334,7 @@ void ImportantMailWindow(){
     
     if(ImportantList.empty()){
         setColor(LIGHTRED);
-        std::cout << "Empty!" << endl;
+        std::cout << "There are no emails in here!" << endl;
         setColor(WHITE);
         
         Sleep(2500);
@@ -378,7 +362,7 @@ void ProjectMailWindow(){
     
     if(ProjectList.empty()){
         setColor(LIGHTRED);
-        std::cout << "Empty!" << endl;
+        std::cout << "There are no emails in here!" << endl;
         setColor(WHITE);
         
         Sleep(2500);
@@ -392,6 +376,7 @@ void ProjectMailWindow(){
     setColor(LIGHTAQUA);
     std::cout << "Your choice: ";
     std::cin >> stt;
+    std::cin.ignore();
     setColor(WHITE);
     
     if(stt == 0)
@@ -407,7 +392,7 @@ void SpamMailWindow(){
     
     if(SpamList.empty()){
         setColor(LIGHTRED);
-        std::cout << "Empty!" << endl;
+        std::cout << "There are no emails in here!" << endl;
         setColor(WHITE);
         
         Sleep(2500);
@@ -421,6 +406,7 @@ void SpamMailWindow(){
     setColor(LIGHTAQUA);
     std::cout << "Your choice: ";
     std::cin >> stt;
+    std::cin.ignore();
     setColor(WHITE);
     
     if(stt == 0)
@@ -450,6 +436,7 @@ void MenuMailBox(){
 
     int selected;
     std::cin >> selected;
+    std::cin.ignore();
     switch(selected){
         case 1:{
             InboxWindow();
@@ -508,6 +495,8 @@ void MailBoxWindow(){
     
     int selected;
     std::cin >> selected;
+    std::cin.ignore();
+
     switch (selected){
         case 1:{
             ComposeMailWindow();
@@ -553,6 +542,7 @@ void ComposeMailWindow(){
     SMTPClient local_server(UserMailServer, UserPortSMTP);
 
     string sender = UserEmail, recipient, subject, body;
+    string CCrecipient, BCCrecipient;
     string Receiver, tmp;
     vector<string> CC, BCC, AttachFile;
 
@@ -560,22 +550,27 @@ void ComposeMailWindow(){
 
     // Recipient
     cout << "To: ";
-    cin.ignore();
+    //cin.ignore();
     getline(cin, recipient);
     cout << line;
+    
     // CC
     cout << "CC: ";
-    getline(cin, Receiver);
-    stringstream ssCC(Receiver);
+    getline(cin, CCrecipient);
+
+    stringstream ssCC(CCrecipient);
     while (ssCC >> tmp){
         CC.push_back(tmp);
     }
     ssCC.clear();
+
     cout << line;
+    
     // BCC
     cout << "BCC: ";
-    getline(cin, recipient);
-    stringstream ssBCC(Receiver);
+    getline(cin, BCCrecipient);
+    
+    stringstream ssBCC(BCCrecipient);
     while (ssBCC >> tmp){
         BCC.push_back(tmp);
     }
@@ -589,6 +584,7 @@ void ComposeMailWindow(){
     // Body content
     cout << "Content: (please type 'end!' on a new line to finish)\n";
     std::string content;
+    
     while(std::getline(std::cin, content) && content != "end!") {
         body += content + "\n"; 
     }
@@ -596,6 +592,8 @@ void ComposeMailWindow(){
 
     // Attach file
     cout << "Attach file: \n";
+
+    tmp = "Attach file";
     while(tmp != ""){    
         tmp = OpenFileDialog();
         cout << tmp << endl;
@@ -688,8 +686,7 @@ void downloadMail(){
         ifs.close();
 
         std::ofstream ofs(file_path, std::ios::app);
-        if(!ofs.is_open())
-            cout << "Error open file" << endl;
+
         // load mail on client
         std::vector<std::pair<std::string,std::string> > AccountList_email = local_client.retrieveAllEmail();
 
@@ -705,10 +702,10 @@ void downloadMail(){
         ofs.close();
 }
 
-void autoDownloadMail(){   
+void autoDownloadMail(){    
     while(true){
-        downloadMail();
         std::this_thread::sleep_for(std::chrono::seconds(UserAutoload));
+        downloadMail();
     }
 }
 
