@@ -623,8 +623,9 @@ void ComposeMailWindow(){
 
     local_server.sendEmail(email);
 
-    cout << "Email sent successfully!\n";
-    Sleep(2500);
+    cout << "Email sent successfully!\n" << line;
+    
+    system("pause");
 }
 
 void downloadMail(){

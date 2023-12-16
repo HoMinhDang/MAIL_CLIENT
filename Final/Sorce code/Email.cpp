@@ -31,7 +31,7 @@ void Email::attachFile(const std::string& file_path)
         std::streampos file_size = file.tellg();
         if (file_size > FILE_SIZE_MAX)
         {
-            std::cerr << "File :" << file_path << " is larger than 3MB" << std::endl;
+            std::cerr << "File :" << file_path << " is larger than 3MB, so file cannot be attach." << std::endl;
         }
         else
         {
