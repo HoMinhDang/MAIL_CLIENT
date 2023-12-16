@@ -1,6 +1,6 @@
 #include "UI.h"
 
-// g++ *.cpp -o test.exe -lsqlite3 -lws2_32 -lcomdlg32
+// g++ *.cpp -o EmailClient.exe -lsqlite3 -lws2_32 -lcomdlg32
 
 int main(){
     if(LoginWindow() == true){
